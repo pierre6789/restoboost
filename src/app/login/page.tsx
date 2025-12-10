@@ -12,7 +12,7 @@ export default function LoginPage() {
           <div className="bg-white rounded-2xl shadow-2xl p-10 space-y-6 border border-gray-100">
             <div className="text-center space-y-4">
               <div className="flex justify-center mb-4">
-                <Logo href={null} width={200} height={80} />
+                <Logo href={undefined} width={200} height={80} />
               </div>
               <h1 className="text-3xl font-bold text-[#2C2C2C]">Connexion</h1>
               <p className="text-gray-600">Accédez à votre tableau de bord</p>
