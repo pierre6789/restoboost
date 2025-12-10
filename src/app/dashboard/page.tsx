@@ -106,19 +106,23 @@ export default async function DashboardPage() {
               </TabsList>
 
               <TabsContent value="feedback" className="mt-6">
-                <FeedbackList restaurantId={restaurant.id} />
+                <FeedbackList restaurantId={restaurantId} />
               </TabsContent>
 
               {plan !== 'free' && (
                 <TabsContent value="staff" className="mt-6">
-                  <StaffManagement restaurantId={restaurant.id} restaurantSlug={restaurant.slug} />
+                  <StaffManagement restaurantId={restaurantId} restaurantSlug={restaurantSlug} />
                 </TabsContent>
               )}
 
               <TabsContent value="qrcode" className="mt-6">
                 <QRCodeSection
-                  restaurant={restaurant}
-                  reviewUrl={`${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/review/${restaurant.slug}`}
+                  restaurant={{
+                    id: restaurantId,
+                    name: restaurant ? (restaurant as { name: string }).name : '',
+                    slug: restaurantSlug,
+                  }}
+                  reviewUrl={`${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/review/${restaurantSlug}`}
                   plan={plan}
                 />
               </TabsContent>
