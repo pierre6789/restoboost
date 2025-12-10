@@ -37,12 +37,15 @@ export async function Navbar() {
                     Facturation
                   </Button>
                 </Link>
-                <Link href={restaurantId ? `/dashboard/settings?restaurant=${restaurantId}` : '/dashboard/settings'} className="relative">
-                  <Button variant="ghost" size="sm" className="gap-2">
-                    <Settings className="h-4 w-4" />
-                    Paramètres
-                  </Button>
-                </Link>
+                <Suspense fallback={
+                  <Link href="/dashboard/settings" className="relative">
+                    <Button variant="ghost" size="sm" className="gap-2">
+                      Paramètres
+                    </Button>
+                  </Link>
+                }>
+                  <SettingsLink />
+                </Suspense>
                 <form action={logout}>
                   <Button
                     type="submit"
