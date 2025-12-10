@@ -77,9 +77,10 @@ export default async function ReviewPage({
       .single()
 
     if (staff) {
+      const staffData = staff as { total_scans: number | null }
       await adminSupabase
         .from('staff_members')
-        .update({ total_scans: (staff.total_scans || 0) + 1 } as never)
+        .update({ total_scans: (staffData.total_scans || 0) + 1 } as never)
         .eq('id', staff_id)
     }
   }
