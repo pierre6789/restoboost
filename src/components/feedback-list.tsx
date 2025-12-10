@@ -50,6 +50,16 @@ export async function FeedbackList({ restaurantId }: FeedbackListProps) {
     )
   }
 
+  // Type assertion for feedbacks array
+  type FeedbackItem = {
+    id: string
+    created_at: string
+    rating: number
+    comment: string | null
+    contact_email: string | null
+  }
+  const typedFeedbacks = feedbacks as FeedbackItem[]
+
   return (
     <Card className="border border-gray-200 shadow-lg">
       <CardHeader>
@@ -69,7 +79,7 @@ export async function FeedbackList({ restaurantId }: FeedbackListProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {feedbacks.map((feedback) => (
+            {typedFeedbacks.map((feedback) => (
               <TableRow key={feedback.id}>
                 <TableCell>
                   {format(new Date(feedback.created_at), 'PPp')}
