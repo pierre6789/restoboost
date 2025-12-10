@@ -40,7 +40,7 @@ export async function POST(request: Request) {
 
     const { error } = await adminSupabase
       .from('profiles')
-      .update(updateData)
+      .update(updateData as never)
       .eq('id', user.id)
 
     if (error) {
