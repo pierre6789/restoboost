@@ -23,12 +23,20 @@ export default async function BillingPage({
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('subscription_status, plan_type')
+    .select('subscription_status, plan_type, plan')
     .eq('id', user.id)
     .single()
 
-  const subscriptionStatus = profile?.subscription_status || 'free'
-  const planType = profile?.plan_type || 'free'
+  // Extract properties with type assertion
+  const subscriptionStatus = profile 
+    ? (profile as { subscription_status: string; plan_type: string; plan: string }).subscription_status 
+    : 'free'
+  const planType = profile 
+    ? (profile as { subscription_status: string; plan_type: string; plan: string }).plan_type 
+    : 'free'
+  const currentPlan = profile 
+    ? (profile as { subscription_status: string; plan_type: string; plan: string }).plan 
+    : 'free'
 
   const params = await searchParams
   const showSuccess = params.success === 'true'
