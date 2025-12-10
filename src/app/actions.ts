@@ -161,7 +161,7 @@ export async function updateRestaurantSettings(
   return { success: true }
 }
 
-export async function createDefaultRestaurant(userId: string) {
+export async function createDefaultRestaurant(userId: string, restaurantName?: string) {
   // Use admin client to bypass RLS
   const supabase = createAdminClient()
 
@@ -192,7 +192,14 @@ export async function createDefaultRestaurant(userId: string) {
   }
 
   // Generate a unique slug
-  const baseSlug = 'mon-restaurant'
+  const name = restaurantName || 'Mon Restaurant'
+  const baseSlug = name
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+  
   let slug = baseSlug
   let counter = 1
 
@@ -215,7 +222,7 @@ export async function createDefaultRestaurant(userId: string) {
     .from('restaurants')
     .insert({
       user_id: userId,
-      name: 'Mon Restaurant',
+      name,
       slug,
       scans_this_month: 0,
     } as never)
@@ -223,7 +230,7 @@ export async function createDefaultRestaurant(userId: string) {
     .single()
 
   if (error) {
-    console.error('Error creating default restaurant:', error)
+    console.error('Error creating restaurant:', error)
     return { error: 'Erreur lors de la création du restaurant' }
   }
 

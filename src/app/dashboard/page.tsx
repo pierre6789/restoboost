@@ -7,11 +7,17 @@ import { StaffManagement } from '@/components/staff-management'
 import { AdvancedAnalytics } from '@/components/advanced-analytics'
 import { PrioritySupport } from '@/components/priority-support'
 import { MultiRestaurantManagement } from '@/components/multi-restaurant-management'
+import { RestaurantSelector } from '@/components/restaurant-selector'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ restaurant?: string }>
+}) {
   const supabase = await createClient()
+  const params = await searchParams
 
   const {
     data: { user },
@@ -40,10 +46,10 @@ export default async function DashboardPage() {
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
 
-  // For Enterprise, get current restaurant from query param or use first
-  // For Free/Pro, use single restaurant
-  const restaurant = plan === 'enterprise' && restaurants && restaurants.length > 0
-    ? restaurants[0] // In a real app, you'd get this from query params
+  // Get current restaurant from query param or use first
+  const selectedRestaurantId = params.restaurant
+  const restaurant = selectedRestaurantId
+    ? restaurants?.find(r => r.id === selectedRestaurantId) || restaurants?.[0]
     : restaurants && restaurants.length > 0
     ? restaurants[0]
     : null
@@ -72,6 +78,16 @@ export default async function DashboardPage() {
             Gérez votre réputation en ligne
           </p>
         </div>
+
+        {/* Restaurant Selector (for Enterprise or if multiple restaurants) */}
+        {(plan === 'enterprise' || (restaurants && restaurants.length > 1)) && (
+          <RestaurantSelector
+            restaurants={restaurants || []}
+            currentRestaurantId={restaurantId}
+            plan={plan}
+            userId={user.id}
+          />
+        )}
 
         {restaurant && (
           <>

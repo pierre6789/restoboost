@@ -2,8 +2,13 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { SettingsForm } from '@/components/settings-form'
 
-export default async function SettingsPage() {
+export default async function SettingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ restaurant?: string }>
+}) {
   const supabase = await createClient()
+  const params = await searchParams
 
   const {
     data: { user },
@@ -13,12 +18,20 @@ export default async function SettingsPage() {
     redirect('/login')
   }
 
-  // Get user's restaurant
-  const { data: restaurant } = await supabase
+  // Get user's restaurants
+  const { data: restaurants } = await supabase
     .from('restaurants')
     .select('*')
     .eq('user_id', user.id)
-    .single()
+    .order('created_at', { ascending: false })
+
+  // Get restaurant from query param or use first
+  const selectedRestaurantId = params.restaurant
+  const restaurant = selectedRestaurantId
+    ? restaurants?.find(r => r.id === selectedRestaurantId)
+    : restaurants && restaurants.length > 0
+    ? restaurants[0]
+    : null
 
   if (!restaurant) {
     redirect('/dashboard')
