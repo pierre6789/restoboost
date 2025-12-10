@@ -4,6 +4,9 @@ import { DashboardStats } from '@/components/dashboard-stats'
 import { FeedbackList } from '@/components/feedback-list'
 import { QRCodeSection } from '@/components/qrcode-section'
 import { StaffManagement } from '@/components/staff-management'
+import { AdvancedAnalytics } from '@/components/advanced-analytics'
+import { PrioritySupport } from '@/components/priority-support'
+import { MultiRestaurantManagement } from '@/components/multi-restaurant-management'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -30,12 +33,20 @@ export default async function DashboardPage() {
     ? (profile as { plan: string }).plan 
     : 'free'
 
-  // Get user's restaurant
-  const { data: restaurant } = await supabase
+  // Get user's restaurants (all for Enterprise, single for others)
+  const { data: restaurants } = await supabase
     .from('restaurants')
     .select('*')
     .eq('user_id', user.id)
-    .single()
+    .order('created_at', { ascending: false })
+
+  // For Enterprise, get current restaurant from query param or use first
+  // For Free/Pro, use single restaurant
+  const restaurant = plan === 'enterprise' && restaurants && restaurants.length > 0
+    ? restaurants[0] // In a real app, you'd get this from query params
+    : restaurants && restaurants.length > 0
+    ? restaurants[0]
+    : null
 
   if (!restaurant) {
     // Create default restaurant if none exists
@@ -90,11 +101,33 @@ export default async function DashboardPage() {
                   Feedback
                 </TabsTrigger>
                 {plan !== 'free' && (
+                  <>
+                    <TabsTrigger 
+                      value="analytics"
+                      className="data-[state=active]:bg-[#FF6B35] data-[state=active]:text-white"
+                    >
+                      Analytics
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="staff"
+                      className="data-[state=active]:bg-[#FF6B35] data-[state=active]:text-white"
+                    >
+                      Personnel
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="support"
+                      className="data-[state=active]:bg-[#FF6B35] data-[state=active]:text-white"
+                    >
+                      Support
+                    </TabsTrigger>
+                  </>
+                )}
+                {plan === 'enterprise' && (
                   <TabsTrigger 
-                    value="staff"
+                    value="restaurants"
                     className="data-[state=active]:bg-[#FF6B35] data-[state=active]:text-white"
                   >
-                    Personnel
+                    Restaurants
                   </TabsTrigger>
                 )}
                 <TabsTrigger 
@@ -110,8 +143,21 @@ export default async function DashboardPage() {
               </TabsContent>
 
               {plan !== 'free' && (
-                <TabsContent value="staff" className="mt-6">
-                  <StaffManagement restaurantId={restaurantId} restaurantSlug={restaurantSlug} />
+                <>
+                  <TabsContent value="analytics" className="mt-6">
+                    <AdvancedAnalytics restaurantId={restaurantId} />
+                  </TabsContent>
+                  <TabsContent value="staff" className="mt-6">
+                    <StaffManagement restaurantId={restaurantId} restaurantSlug={restaurantSlug} />
+                  </TabsContent>
+                  <TabsContent value="support" className="mt-6">
+                    <PrioritySupport />
+                  </TabsContent>
+                </>
+              )}
+              {plan === 'enterprise' && (
+                <TabsContent value="restaurants" className="mt-6">
+                  <MultiRestaurantManagement userId={user.id} currentRestaurantId={restaurantId} />
                 </TabsContent>
               )}
 

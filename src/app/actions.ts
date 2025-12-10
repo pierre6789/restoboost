@@ -165,6 +165,32 @@ export async function createDefaultRestaurant(userId: string) {
   // Use admin client to bypass RLS
   const supabase = createAdminClient()
 
+  // Check user plan to enforce restaurant limits
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('plan')
+    .eq('id', userId)
+    .single()
+
+  const plan = profile ? (profile as { plan: string }).plan : 'free'
+
+  // Check existing restaurants count
+  const { data: existingRestaurants } = await supabase
+    .from('restaurants')
+    .select('id')
+    .eq('user_id', userId)
+
+  const restaurantCount = existingRestaurants?.length || 0
+
+  // Enforce limits: Free/Pro = 1 restaurant, Enterprise = 5 restaurants
+  if (plan !== 'enterprise' && restaurantCount >= 1) {
+    return { error: 'Vous avez atteint la limite de 1 restaurant. Passez au plan Enterprise pour gérer jusqu\'à 5 restaurants.' }
+  }
+
+  if (plan === 'enterprise' && restaurantCount >= 5) {
+    return { error: 'Vous avez atteint la limite de 5 restaurants.' }
+  }
+
   // Generate a unique slug
   const baseSlug = 'mon-restaurant'
   let slug = baseSlug
