@@ -25,12 +25,16 @@ export default async function SettingsPage({
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
 
+  // Type assertion for restaurants
+  type Restaurant = { id: string; slug: string; name: string; user_id: string; scans_this_month: number; google_maps_url: string | null; logo_url: string | null; created_at: string; updated_at: string }
+  const typedRestaurants = (restaurants || []) as Restaurant[]
+
   // Get restaurant from query param or use first
   const selectedRestaurantId = params.restaurant
   const restaurant = selectedRestaurantId
-    ? restaurants?.find(r => r.id === selectedRestaurantId)
-    : restaurants && restaurants.length > 0
-    ? restaurants[0]
+    ? typedRestaurants.find(r => r.id === selectedRestaurantId)
+    : typedRestaurants.length > 0
+    ? typedRestaurants[0]
     : null
 
   if (!restaurant) {
