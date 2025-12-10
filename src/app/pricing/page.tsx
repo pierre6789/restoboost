@@ -21,9 +21,10 @@ export default async function PricingPage() {
       .eq('id', user.id)
       .single()
 
-    subscriptionStatus = profile?.subscription_status || 'free'
-    planType = profile?.plan_type || 'free'
-    currentPlan = profile?.plan || 'free'
+    const profileData = profile as { subscription_status?: string; plan_type?: string; plan?: string } | null
+    subscriptionStatus = profileData?.subscription_status || 'free'
+    planType = profileData?.plan_type || 'free'
+    currentPlan = profileData?.plan || 'free'
   }
 
   const plans = [
