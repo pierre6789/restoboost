@@ -54,13 +54,16 @@ export async function submitFeedback(
       .single()
 
     // FEATURE GATING: Only send email if plan is 'pro' or 'enterprise'
-    const plan = profile?.plan || 'free'
-    if (plan !== 'free' && profile?.email) {
+    // Extract properties with type assertion
+    const profileEmail = profile ? (profile as { email: string; plan: string }).email : null
+    const plan = profile ? (profile as { email: string; plan: string }).plan : 'free'
+    
+    if (plan !== 'free' && profileEmail) {
       // Send email notification
       try {
         await resend.emails.send({
           from: 'RestoBoost <noreply@restoboost.com>',
-          to: profile.email,
+          to: profileEmail,
           subject: `Nouveau feedback pour ${restaurantName}`,
           html: `
             <h2>Nouveau feedback reçu</h2>
