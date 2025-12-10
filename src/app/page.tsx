@@ -27,7 +27,7 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center space-y-8">
             <div className="flex justify-center animate-fade-in">
-              <Logo href={null} width={320} height={128} />
+              <Logo href={undefined} width={320} height={128} />
             </div>
             
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight">
