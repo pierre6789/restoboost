@@ -192,7 +192,7 @@ export async function createDefaultRestaurant(userId: string) {
       name: 'Mon Restaurant',
       slug,
       scans_this_month: 0,
-    })
+    } as never)
     .select()
     .single()
 
