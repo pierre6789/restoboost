@@ -57,7 +57,7 @@ export function StaffManagement({ restaurantId, restaurantSlug }: StaffManagemen
       .insert({
         restaurant_id: restaurantId,
         name: newStaffName.trim(),
-      })
+      } as never)
       .select()
       .single()
 

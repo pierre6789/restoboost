@@ -48,7 +48,7 @@ export async function POST(request: Request) {
             subscription_status: 'active',
             plan_type: planType,
             plan: planType,
-          })
+          } as never)
           .eq('id', userId)
       }
       break
@@ -102,7 +102,7 @@ export async function POST(request: Request) {
 
           await supabase
             .from('profiles')
-            .update(updateData)
+            .update(updateData as never)
             .eq('id', profile.id)
         }
       }
@@ -126,7 +126,7 @@ export async function POST(request: Request) {
         if (profile) {
           await supabase
             .from('profiles')
-            .update({ subscription_status: 'past_due' })
+            .update({ subscription_status: 'past_due' } as never)
             .eq('id', profile.id)
         }
       }
@@ -150,7 +150,7 @@ export async function POST(request: Request) {
         if (profile) {
           await supabase
             .from('profiles')
-            .update({ subscription_status: 'active' })
+            .update({ subscription_status: 'active' } as never)
             .eq('id', profile.id)
         }
       }

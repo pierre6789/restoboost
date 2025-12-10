@@ -41,7 +41,7 @@ export default async function ReviewPage({
   const newScansCount = (restaurant.scans_this_month || 0) + 1
   await adminSupabase
     .from('restaurants')
-    .update({ scans_this_month: newScansCount })
+    .update({ scans_this_month: newScansCount } as never)
     .eq('id', restaurant.id)
 
   // FEATURE GATING: If free plan and over limit, redirect directly to Google Maps
@@ -67,7 +67,7 @@ export default async function ReviewPage({
     if (staff) {
       await adminSupabase
         .from('staff_members')
-        .update({ total_scans: (staff.total_scans || 0) + 1 })
+        .update({ total_scans: (staff.total_scans || 0) + 1 } as never)
         .eq('id', staff_id)
     }
   }

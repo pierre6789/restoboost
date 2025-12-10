@@ -33,7 +33,7 @@ export async function GET(request: Request) {
       // Fallback: si la fonction n'existe pas, utiliser l'update direct
       const { error: updateError } = await supabase
         .from('restaurants')
-        .update({ scans_this_month: 0 })
+        .update({ scans_this_month: 0 } as never)
         .gt('scans_this_month', 0)
 
       if (updateError) {
