@@ -17,6 +17,7 @@ interface ReviewFormProps {
 
 export function ReviewForm({ restaurantId, googleMapsUrl, staffId }: ReviewFormProps) {
   const [rating, setRating] = useState<number | null>(null)
+  const [hoverRating, setHoverRating] = useState<number | null>(null)
   const [comment, setComment] = useState('')
   const [contactEmail, setContactEmail] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -96,24 +97,31 @@ export function ReviewForm({ restaurantId, googleMapsUrl, staffId }: ReviewFormP
         <div className="space-y-4">
           {/* Star Rating */}
           <div className="flex justify-center gap-2">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <button
-                key={star}
-                type="button"
-                onClick={() => handleRatingClick(star)}
-                className={`transition-all transform hover:scale-110 ${
-                  rating === star
-                    ? 'text-yellow-400 scale-110'
-                    : 'text-gray-300 hover:text-yellow-300'
-                }`}
-                aria-label={`${star} étoile${star > 1 ? 's' : ''}`}
-              >
-                <Star
-                  size={48}
-                  className={rating === star ? 'fill-current' : ''}
-                />
-              </button>
-            ))}
+            {[1, 2, 3, 4, 5].map((star) => {
+              const displayRating = hoverRating || rating
+              const isFilled = star <= (displayRating || 0)
+              
+              return (
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() => handleRatingClick(star)}
+                  onMouseEnter={() => setHoverRating(star)}
+                  onMouseLeave={() => setHoverRating(null)}
+                  className={`transition-all transform hover:scale-110 ${
+                    isFilled
+                      ? 'text-yellow-400'
+                      : 'text-gray-300'
+                  } ${rating === star ? 'scale-110' : ''}`}
+                  aria-label={`${star} étoile${star > 1 ? 's' : ''}`}
+                >
+                  <Star
+                    size={48}
+                    className={isFilled ? 'fill-current' : ''}
+                  />
+                </button>
+              )
+            })}
           </div>
 
           {/* Emoji Alternative */}

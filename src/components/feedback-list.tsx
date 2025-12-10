@@ -86,7 +86,7 @@ export async function FeedbackList({ restaurantId }: FeedbackListProps) {
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-1">
-                    {Array.from({ length: 3 }).map((_, i) => (
+                    {Array.from({ length: 5 }).map((_, i) => (
                       <span
                         key={i}
                         className={`text-lg ${
@@ -99,7 +99,7 @@ export async function FeedbackList({ restaurantId }: FeedbackListProps) {
                       </span>
                     ))}
                     <span className="text-sm text-muted-foreground ml-1">
-                      ({feedback.rating}/3)
+                      ({feedback.rating}/5)
                     </span>
                   </div>
                 </TableCell>
