@@ -46,6 +46,10 @@ export default async function DashboardPage() {
     }
   }
 
+  // Extract restaurant properties with type assertion
+  const restaurantId = restaurant ? (restaurant as { id: string; slug: string }).id : ''
+  const restaurantSlug = restaurant ? (restaurant as { id: string; slug: string }).slug : ''
+
   return (
     <>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -75,7 +79,7 @@ export default async function DashboardPage() {
               </div>
             )}
 
-            <DashboardStats restaurantId={restaurant.id} />
+            <DashboardStats restaurantId={restaurantId} />
 
             <Tabs defaultValue="feedback" className="mt-10">
               <TabsList className="bg-gray-100">
