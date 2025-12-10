@@ -60,7 +60,7 @@ export async function POST(request: Request) {
       
       // Get customer email to find user
       const customer = await stripe.customers.retrieve(subscription.customer as string)
-      const customerEmail = typeof customer !== 'deleted' ? customer.email : null
+      const customerEmail = customer && 'email' in customer ? customer.email : null
 
       if (customerEmail) {
         // Find user by email
@@ -114,7 +114,7 @@ export async function POST(request: Request) {
       const customerId = invoice.customer as string
       
       const customer = await stripe.customers.retrieve(customerId)
-      const customerEmail = typeof customer !== 'deleted' ? customer.email : null
+      const customerEmail = customer && 'email' in customer ? customer.email : null
 
       if (customerEmail) {
         const { data: profile } = await supabase
@@ -138,7 +138,7 @@ export async function POST(request: Request) {
       const customerId = invoice.customer as string
       
       const customer = await stripe.customers.retrieve(customerId)
-      const customerEmail = typeof customer !== 'deleted' ? customer.email : null
+      const customerEmail = customer && 'email' in customer ? customer.email : null
 
       if (customerEmail) {
         const { data: profile } = await supabase
