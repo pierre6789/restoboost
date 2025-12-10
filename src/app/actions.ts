@@ -15,14 +15,21 @@ export async function submitFeedback(
   const supabase = await createClient()
 
   // Insert feedback
+  const feedbackData: {
+    restaurant_id: string
+    rating: number
+    comment: string | null
+    contact_email: string | null
+  } = {
+    restaurant_id: restaurantId,
+    rating,
+    comment: comment || null,
+    contact_email: contactEmail || null,
+  }
+
   const { error: feedbackError } = await supabase
     .from('feedback')
-    .insert({
-      restaurant_id: restaurantId,
-      rating,
-      comment: comment || null,
-      contact_email: contactEmail || null,
-    })
+    .insert(feedbackData)
 
   if (feedbackError) {
     console.error('Error inserting feedback:', feedbackError)
