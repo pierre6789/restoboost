@@ -42,11 +42,11 @@ export async function submitFeedback(
     .eq('id', restaurantId)
     .single()
 
-  if (restaurant) {
+  if (restaurant && 'user_id' in restaurant) {
     const { data: profile } = await supabase
       .from('profiles')
       .select('email, plan')
-      .eq('id', restaurant.user_id)
+      .eq('id', restaurant.user_id as string)
       .single()
 
     // FEATURE GATING: Only send email if plan is 'pro' or 'enterprise'
