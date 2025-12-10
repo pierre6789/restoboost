@@ -62,7 +62,7 @@ export async function submitFeedback(
       // Send email notification
       try {
         await resend.emails.send({
-          from: 'RestoBoost <noreply@restoboost.com>',
+          from: 'RestoRise <noreply@restorise.com>',
           to: profileEmail,
           subject: `Nouveau feedback pour ${restaurantName}`,
           html: `
@@ -271,8 +271,8 @@ export async function submitSupportRequest(subject: string, message: string) {
   try {
     // Send email via Resend
     await resend.emails.send({
-      from: 'RestoBoost Support <support@restoboost.com>',
-      to: 'support@restoboost.com', // Your support email
+      from: 'RestoRise Support <support@restorise.com>',
+      to: 'support@restorise.com', // Your support email
       replyTo: userEmail,
       subject: `[Support Prioritaire - ${plan.toUpperCase()}] ${subject}`,
       html: `

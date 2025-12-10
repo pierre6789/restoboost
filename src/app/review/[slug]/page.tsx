@@ -127,7 +127,7 @@ export default async function ReviewPage({
         {/* Footer - Only show for free plan */}
         {showBranding && (
           <p className="text-center text-sm text-gray-500 mt-4">
-            Propulsé par <span className="font-semibold">RestoBoost</span>
+            Propulsé par <span className="font-semibold">RestoRise</span>
           </p>
         )}
       </div>

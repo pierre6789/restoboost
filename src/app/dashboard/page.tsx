@@ -99,7 +99,7 @@ export default async function DashboardPage({
             {plan === 'free' && (
               <div className="mb-6 p-4 bg-gradient-to-r from-orange-50 to-amber-50 border border-[#FF6B35]/30 rounded-xl shadow-md">
                 <p className="text-[#2C2C2C] font-medium">
-                  <span className="text-[#FF6B35] font-bold">💡 Upgrade to Pro</span> pour activer les alertes email instantanées et le suivi du personnel.
+                  <span className="text-[#FF6B35] font-bold">💡 Passez au plan Pro</span> pour activer les alertes email instantanées et le suivi du personnel.
                 </p>
                 <a
                   href="/pricing"

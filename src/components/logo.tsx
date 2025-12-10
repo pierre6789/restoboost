@@ -18,7 +18,7 @@ export function Logo({
     <div className={`flex items-center ${className}`}>
       <Image
         src="/logo.png"
-        alt="RestoBoost"
+        alt="RestoRise"
         width={width}
         height={height}
         className="h-auto object-contain"

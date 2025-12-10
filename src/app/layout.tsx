@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "RestoBoost - Gestion de Réputation pour Restaurants",
+  title: "RestoRise - Gestion de Réputation pour Restaurants",
   description: "Outil de gestion de réputation pour restaurants avec QR codes",
 };
 
