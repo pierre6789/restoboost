@@ -1,19 +1,14 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { LogOut, Settings } from 'lucide-react'
+import { LogOut } from 'lucide-react'
 import { logout } from '@/app/auth-actions'
 import { Logo } from '@/components/logo'
-import { headers } from 'next/headers'
+import { SettingsLink } from '@/components/settings-link'
+import { Suspense } from 'react'
 
 export async function Navbar() {
   const supabase = await createClient()
-  const headersList = await headers()
-  const pathname = headersList.get('x-pathname') || ''
-  
-  // Extract restaurant ID from URL if present
-  const restaurantMatch = pathname.match(/[?&]restaurant=([^&]+)/)
-  const restaurantId = restaurantMatch ? restaurantMatch[1] : null
 
   const {
     data: { user },
