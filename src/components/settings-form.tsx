@@ -93,7 +93,7 @@ export function SettingsForm({ restaurant }: SettingsFormProps) {
             <Label htmlFor="slug">Slug (URL)</Label>
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">
-                {process.env.NEXT_PUBLIC_URL || 'https://votre-site.com'}/
+                {process.env.NEXT_PUBLIC_URL || 'https://restorise.fr'}/
                 review/
               </span>
               <Input

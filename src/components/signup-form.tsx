@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
+import { Chrome } from 'lucide-react'
 
 export function SignupForm() {
   const [email, setEmail] = useState('')
@@ -21,6 +22,10 @@ export function SignupForm() {
 
     const supabase = createClient()
 
+    // Get redirect URL for email confirmation
+    const baseUrl = process.env.NEXT_PUBLIC_URL || window.location.origin
+    const redirectTo = `${baseUrl}/auth/callback`
+
     // Sign up user
     const {
       data: { user },
@@ -28,6 +33,9 @@ export function SignupForm() {
     } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: redirectTo,
+      },
     })
 
     if (signUpError) {
@@ -46,14 +54,31 @@ export function SignupForm() {
         return
       }
 
-      toast.success('Compte créé avec succès !')
-      router.push('/dashboard')
-      router.refresh()
+      toast.success('Compte créé avec succès ! Vérifiez votre email pour confirmer votre compte.')
+      // Don't redirect immediately - user needs to confirm email
+    }
+  }
+
+  const handleGoogleSignup = async () => {
+    const supabase = createClient()
+    const baseUrl = process.env.NEXT_PUBLIC_URL || window.location.origin
+    const redirectTo = `${baseUrl}/auth/callback`
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo,
+      },
+    })
+
+    if (error) {
+      toast.error(error.message || 'Erreur lors de la connexion avec Google')
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
         <Input
@@ -92,6 +117,27 @@ export function SignupForm() {
         {isLoading ? 'Création...' : 'Créer un compte'}
       </Button>
     </form>
+
+    <div className="relative">
+      <div className="absolute inset-0 flex items-center">
+        <span className="w-full border-t" />
+      </div>
+      <div className="relative flex justify-center text-xs uppercase">
+        <span className="bg-white px-2 text-muted-foreground">Ou</span>
+      </div>
+    </div>
+
+    <Button
+      type="button"
+      variant="outline"
+      className="w-full"
+      onClick={handleGoogleSignup}
+      disabled={isLoading}
+    >
+      <Chrome className="h-4 w-4 mr-2" />
+      Continuer avec Google
+    </Button>
+    </div>
   )
 }
 

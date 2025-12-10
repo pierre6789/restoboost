@@ -175,7 +175,7 @@ export default async function DashboardPage({
                     name: restaurant ? (restaurant as { name: string }).name : '',
                     slug: restaurantSlug,
                   }}
-                  reviewUrl={`${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/review/${restaurantSlug}`}
+                  reviewUrl={`${process.env.NEXT_PUBLIC_URL || 'https://restorise.fr'}/review/${restaurantSlug}`}
                   plan={plan}
                 />
               </TabsContent>
