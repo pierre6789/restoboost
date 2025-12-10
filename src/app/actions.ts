@@ -33,7 +33,7 @@ export async function submitFeedback(
   await supabase.from('events').insert({
     restaurant_id: restaurantId,
     type: 'negative_feedback',
-  })
+  } as never)
 
   // Get restaurant and owner email
   const { data: restaurant } = await supabase
