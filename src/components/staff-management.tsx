@@ -15,6 +15,7 @@ type StaffMember = Database['public']['Tables']['staff_members']['Row']
 
 interface StaffManagementProps {
   restaurantId: string
+  restaurantSlug?: string
 }
 
 export function StaffManagement({ restaurantId, restaurantSlug }: StaffManagementProps) {
