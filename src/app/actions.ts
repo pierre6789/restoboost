@@ -42,11 +42,15 @@ export async function submitFeedback(
     .eq('id', restaurantId)
     .single()
 
-  if (restaurant && 'user_id' in restaurant) {
+  if (restaurant) {
+    // Extract user_id with type assertion
+    const userId = (restaurant as { user_id: string; name: string }).user_id
+    const restaurantName = (restaurant as { user_id: string; name: string }).name
+    
     const { data: profile } = await supabase
       .from('profiles')
       .select('email, plan')
-      .eq('id', restaurant.user_id as string)
+      .eq('id', userId)
       .single()
 
     // FEATURE GATING: Only send email if plan is 'pro' or 'enterprise'
@@ -57,10 +61,10 @@ export async function submitFeedback(
         await resend.emails.send({
           from: 'RestoBoost <noreply@restoboost.com>',
           to: profile.email,
-          subject: `Nouveau feedback pour ${restaurant.name}`,
+          subject: `Nouveau feedback pour ${restaurantName}`,
           html: `
             <h2>Nouveau feedback reçu</h2>
-            <p><strong>Restaurant:</strong> ${restaurant.name}</p>
+            <p><strong>Restaurant:</strong> ${restaurantName}</p>
             <p><strong>Note:</strong> ${rating}/3</p>
             ${comment ? `<p><strong>Commentaire:</strong> ${comment}</p>` : ''}
             ${contactEmail ? `<p><strong>Email du client:</strong> ${contactEmail}</p>` : ''}
