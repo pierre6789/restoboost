@@ -4,9 +4,16 @@ import { Button } from '@/components/ui/button'
 import { LogOut, Settings } from 'lucide-react'
 import { logout } from '@/app/auth-actions'
 import { Logo } from '@/components/logo'
+import { headers } from 'next/headers'
 
 export async function Navbar() {
   const supabase = await createClient()
+  const headersList = await headers()
+  const pathname = headersList.get('x-pathname') || ''
+  
+  // Extract restaurant ID from URL if present
+  const restaurantMatch = pathname.match(/[?&]restaurant=([^&]+)/)
+  const restaurantId = restaurantMatch ? restaurantMatch[1] : null
 
   const {
     data: { user },
@@ -35,7 +42,7 @@ export async function Navbar() {
                     Facturation
                   </Button>
                 </Link>
-                <Link href="/dashboard/settings" className="relative">
+                <Link href={restaurantId ? `/dashboard/settings?restaurant=${restaurantId}` : '/dashboard/settings'} className="relative">
                   <Button variant="ghost" size="sm" className="gap-2">
                     <Settings className="h-4 w-4" />
                     Paramètres

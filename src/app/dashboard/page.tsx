@@ -142,14 +142,6 @@ export default async function DashboardPage({
                     </TabsTrigger>
                   </>
                 )}
-                {plan === 'enterprise' && (
-                  <TabsTrigger 
-                    value="restaurants"
-                    className="data-[state=active]:bg-[#FF6B35] data-[state=active]:text-white"
-                  >
-                    Restaurants
-                  </TabsTrigger>
-                )}
                 <TabsTrigger 
                   value="qrcode"
                   className="data-[state=active]:bg-[#FF6B35] data-[state=active]:text-white"
@@ -174,11 +166,6 @@ export default async function DashboardPage({
                     <PrioritySupport />
                   </TabsContent>
                 </>
-              )}
-              {plan === 'enterprise' && (
-                <TabsContent value="restaurants" className="mt-6">
-                  <MultiRestaurantManagement userId={user.id} currentRestaurantId={restaurantId} />
-                </TabsContent>
               )}
 
               <TabsContent value="qrcode" className="mt-6">
