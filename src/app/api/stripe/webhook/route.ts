@@ -71,6 +71,9 @@ export async function POST(request: Request) {
           .single()
 
         if (profile) {
+          // Extract profile id with type assertion
+          const profileId = (profile as { id: string }).id
+          
           let status: 'active' | 'canceled' | 'past_due' = 'active'
           let plan: 'free' | 'pro' | 'enterprise' = 'free'
 
@@ -89,7 +92,7 @@ export async function POST(request: Request) {
           const { data: currentProfile } = await supabase
             .from('profiles')
             .select('plan')
-            .eq('id', profile.id)
+            .eq('id', profileId)
             .single()
 
           const updateData: { subscription_status: string; plan?: string } = {
@@ -103,7 +106,7 @@ export async function POST(request: Request) {
           await supabase
             .from('profiles')
             .update(updateData as never)
-            .eq('id', profile.id)
+            .eq('id', profileId)
         }
       }
       break
@@ -124,10 +127,11 @@ export async function POST(request: Request) {
           .single()
 
         if (profile) {
+          const profileId = (profile as { id: string }).id
           await supabase
             .from('profiles')
             .update({ subscription_status: 'past_due' } as never)
-            .eq('id', profile.id)
+            .eq('id', profileId)
         }
       }
       break
@@ -148,10 +152,11 @@ export async function POST(request: Request) {
           .single()
 
         if (profile) {
+          const profileId = (profile as { id: string }).id
           await supabase
             .from('profiles')
             .update({ subscription_status: 'active' } as never)
-            .eq('id', profile.id)
+            .eq('id', profileId)
         }
       }
       break
