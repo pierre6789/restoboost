@@ -5,6 +5,9 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { resend } from '@/lib/resend'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import type { Database } from '@/lib/supabase/database.types'
+
+type FeedbackInsert = Database['public']['Tables']['feedback']['Insert']
 
 export async function submitFeedback(
   restaurantId: string,
@@ -15,12 +18,7 @@ export async function submitFeedback(
   const supabase = await createClient()
 
   // Insert feedback
-  const feedbackData: {
-    restaurant_id: string
-    rating: number
-    comment: string | null
-    contact_email: string | null
-  } = {
+  const feedbackData: FeedbackInsert = {
     restaurant_id: restaurantId,
     rating,
     comment: comment || null,
