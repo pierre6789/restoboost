@@ -12,6 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { CreateRestaurantDialog } from '@/components/create-restaurant-dialog'
 import type { Database } from '@/lib/supabase/database.types'
 
 type Restaurant = Database['public']['Tables']['restaurants']['Row']
