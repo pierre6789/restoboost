@@ -28,32 +28,44 @@ export default async function ReviewPage({
     notFound()
   }
 
+  // Extract restaurant properties with type assertion
+  const restaurantData = restaurant as {
+    id: string
+    user_id: string
+    name: string
+    slug: string
+    google_maps_url: string | null
+    logo_url: string | null
+    scans_this_month: number | null
+  }
+
   // Get user plan
   const { data: profile } = await supabase
     .from('profiles')
     .select('plan')
-    .eq('id', restaurant.user_id)
+    .eq('id', restaurantData.user_id)
     .single()
 
-  const plan = profile?.plan || 'free'
+  const profileData = profile as { plan?: string } | null
+  const plan = profileData?.plan || 'free'
 
   // Increment scans_this_month (using admin client to bypass RLS)
-  const newScansCount = (restaurant.scans_this_month || 0) + 1
+  const newScansCount = (restaurantData.scans_this_month || 0) + 1
   await adminSupabase
     .from('restaurants')
     .update({ scans_this_month: newScansCount } as never)
-    .eq('id', restaurant.id)
+    .eq('id', restaurantData.id)
 
   // FEATURE GATING: If free plan and over limit, redirect directly to Google Maps
   if (plan === 'free' && newScansCount > 30) {
-    if (restaurant.google_maps_url) {
-      redirect(restaurant.google_maps_url)
+    if (restaurantData.google_maps_url) {
+      redirect(restaurantData.google_maps_url)
     }
     // If no Google Maps URL, still show the form but log the event
   }
 
   // Log scan event
-  await logEvent(restaurant.id, 'scan')
+  await logEvent(restaurantData.id, 'scan')
 
   // If staff_id is provided, increment their total_scans (only for pro/enterprise)
   if (staff_id && plan !== 'free') {
@@ -61,7 +73,7 @@ export default async function ReviewPage({
       .from('staff_members')
       .select('total_scans')
       .eq('id', staff_id)
-      .eq('restaurant_id', restaurant.id)
+      .eq('restaurant_id', restaurantData.id)
       .single()
 
     if (staff) {
@@ -81,11 +93,11 @@ export default async function ReviewPage({
         <div className="bg-white rounded-3xl shadow-2xl p-10 space-y-8 border border-gray-100">
           {/* Logo/Name Section */}
           <div className="text-center space-y-4">
-            {restaurant.logo_url ? (
+            {restaurantData.logo_url ? (
               <div className="flex justify-center">
                 <Image
-                  src={restaurant.logo_url}
-                  alt={restaurant.name}
+                  src={restaurantData.logo_url}
+                  alt={restaurantData.name}
                   width={80}
                   height={80}
                   className="rounded-full object-cover"
@@ -94,19 +106,19 @@ export default async function ReviewPage({
             ) : (
               <div className="w-20 h-20 mx-auto bg-gradient-to-br from-[#FF6B35] to-[#E55A2B] rounded-full flex items-center justify-center">
                 <span className="text-3xl font-bold text-white">
-                  {restaurant.name.charAt(0).toUpperCase()}
+                  {restaurantData.name.charAt(0).toUpperCase()}
                 </span>
               </div>
             )}
             <h1 className="text-2xl font-bold text-gray-900">
-              {restaurant.name}
+              {restaurantData.name}
             </h1>
           </div>
 
           {/* Review Form */}
           <ReviewForm
-            restaurantId={restaurant.id}
-            googleMapsUrl={restaurant.google_maps_url}
+            restaurantId={restaurantData.id}
+            googleMapsUrl={restaurantData.google_maps_url}
             staffId={staff_id}
           />
         </div>
