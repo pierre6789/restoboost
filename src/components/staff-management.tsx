@@ -8,7 +8,9 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { toast } from 'sonner'
-import { Plus, Copy, Trash2 } from 'lucide-react'
+import { Plus, Copy, Trash2, Download } from 'lucide-react'
+import { QRCodeSVG } from 'qrcode.react'
+import { downloadQRCode } from '@/lib/qrcode-utils'
 import type { Database } from '@/lib/supabase/database.types'
 
 type StaffMember = Database['public']['Tables']['staff_members']['Row']
@@ -100,6 +102,21 @@ export function StaffManagement({ restaurantId, restaurantSlug }: StaffManagemen
     toast.success('URL copiée dans le presse-papier')
   }
 
+  const getStaffQRUrl = (staffId: string) => {
+    const baseUrl = process.env.NEXT_PUBLIC_URL || window.location.origin
+    const slug = restaurantSlug || 'your-slug'
+    return `${baseUrl}/review/${slug}?staff_id=${staffId}`
+  }
+
+  const handleDownloadStaffQR = (staffId: string, staffName: string) => {
+    const qrId = `staff-qr-${staffId}`
+    // Wait a bit for the QR code to render
+    setTimeout(() => {
+      downloadQRCode(qrId, `qrcode-${staffName.replace(/\s+/g, '-').toLowerCase()}.png`)
+      toast.success('QR Code téléchargé')
+    }, 100)
+  }
+
   if (isLoading) {
     return <div>Chargement...</div>
   }
@@ -145,37 +162,63 @@ export function StaffManagement({ restaurantId, restaurantSlug }: StaffManagemen
                 <TableRow>
                   <TableHead>Nom</TableHead>
                   <TableHead>Scans totaux</TableHead>
+                  <TableHead>QR Code</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {staffMembers.map((staff) => (
-                  <TableRow key={staff.id}>
-                    <TableCell className="font-medium">{staff.name}</TableCell>
-                    <TableCell>{staff.total_scans}</TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => copyStaffQRUrl(staff.id)}
-                          className="gap-2"
-                        >
-                          <Copy className="h-4 w-4" />
-                          Copier URL
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDeleteStaff(staff.id)}
-                          className="gap-2 text-red-600 hover:text-red-700"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {staffMembers.map((staff) => {
+                  const staffQRUrl = getStaffQRUrl(staff.id)
+                  return (
+                    <TableRow key={staff.id}>
+                      <TableCell className="font-medium">{staff.name}</TableCell>
+                      <TableCell>{staff.total_scans || 0}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <div className="hidden">
+                            <QRCodeSVG
+                              id={`staff-qr-${staff.id}`}
+                              value={staffQRUrl}
+                              size={128}
+                              level="H"
+                              includeMargin={true}
+                            />
+                          </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDownloadStaffQR(staff.id, staff.name)}
+                            className="gap-2"
+                          >
+                            <Download className="h-4 w-4" />
+                            Télécharger QR
+                          </Button>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => copyStaffQRUrl(staff.id)}
+                            className="gap-2"
+                          >
+                            <Copy className="h-4 w-4" />
+                            Copier URL
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDeleteStaff(staff.id)}
+                            className="gap-2 text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
               </TableBody>
             </Table>
           )}

@@ -4,11 +4,12 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Download, TrendingUp, Calendar } from 'lucide-react'
+import { Download, TrendingUp, Calendar, Users, BarChart3 } from 'lucide-react'
 import { toast } from 'sonner'
 import type { Database } from '@/lib/supabase/database.types'
 
 type Event = Database['public']['Tables']['events']['Row']
+type StaffMember = Database['public']['Tables']['staff_members']['Row']
 
 interface AdvancedAnalyticsProps {
   restaurantId: string
@@ -16,12 +17,14 @@ interface AdvancedAnalyticsProps {
 
 export function AdvancedAnalytics({ restaurantId }: AdvancedAnalyticsProps) {
   const [events, setEvents] = useState<Event[]>([])
+  const [staffMembers, setStaffMembers] = useState<StaffMember[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | 'all'>('30d')
   const supabase = createClient()
 
   useEffect(() => {
     loadAnalytics()
+    loadStaffAnalytics()
   }, [restaurantId, timeRange])
 
   const loadAnalytics = async () => {
@@ -58,6 +61,20 @@ export function AdvancedAnalytics({ restaurantId }: AdvancedAnalyticsProps) {
       setEvents(data || [])
     }
     setIsLoading(false)
+  }
+
+  const loadStaffAnalytics = async () => {
+    const { data, error } = await supabase
+      .from('staff_members')
+      .select('*')
+      .eq('restaurant_id', restaurantId)
+      .order('total_scans', { ascending: false })
+
+    if (error) {
+      console.error('Error loading staff analytics:', error)
+    } else {
+      setStaffMembers(data || [])
+    }
   }
 
   const exportToCSV = () => {
@@ -214,6 +231,73 @@ export function AdvancedAnalytics({ restaurantId }: AdvancedAnalyticsProps) {
                           </div>
                         )
                       })}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Staff Analytics */}
+              {staffMembers.length > 0 && (
+                <Card className="mt-6">
+                  <CardHeader>
+                    <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                      <Users className="h-5 w-5" />
+                      Performance du Personnel
+                    </CardTitle>
+                    <CardDescription>
+                      Analysez les performances de chaque membre de votre équipe
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {staffMembers.map((staff) => {
+                        const totalScans = staff.total_scans || 0
+                        const maxScans = Math.max(...staffMembers.map(s => s.total_scans || 0), 1)
+                        const percentage = maxScans > 0 ? (totalScans / maxScans) * 100 : 0
+                        
+                        return (
+                          <div key={staff.id} className="space-y-2">
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="font-medium">{staff.name}</span>
+                              <span className="text-gray-600 font-semibold">
+                                {totalScans} scan{totalScans > 1 ? 's' : ''}
+                              </span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-3">
+                              <div
+                                className="bg-gradient-to-r from-[#FF6B35] to-[#E55A2B] h-3 rounded-full transition-all duration-500"
+                                style={{ width: `${percentage}%` }}
+                              />
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+
+                    {/* Staff Stats Summary */}
+                    <div className="mt-6 pt-6 border-t border-gray-200">
+                      <div className="grid md:grid-cols-3 gap-4">
+                        <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
+                          <div className="text-3xl font-bold text-blue-600 mb-1">
+                            {staffMembers.length}
+                          </div>
+                          <div className="text-sm text-gray-700">Membres du personnel</div>
+                        </div>
+                        <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-xl">
+                          <div className="text-3xl font-bold text-green-600 mb-1">
+                            {staffMembers.reduce((sum, s) => sum + (s.total_scans || 0), 0)}
+                          </div>
+                          <div className="text-sm text-gray-700">Scans totaux</div>
+                        </div>
+                        <div className="text-center p-4 bg-gradient-to-br from-[#FF6B35]/10 to-[#E55A2B]/10 rounded-xl">
+                          <div className="text-3xl font-bold text-[#FF6B35] mb-1">
+                            {staffMembers.length > 0 
+                              ? Math.round(staffMembers.reduce((sum, s) => sum + (s.total_scans || 0), 0) / staffMembers.length)
+                              : 0}
+                          </div>
+                          <div className="text-sm text-gray-700">Moyenne par membre</div>
+                        </div>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
