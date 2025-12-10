@@ -9,14 +9,13 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { MessageCircle, Send, CheckCircle2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { resend } from '@/lib/resend'
+import { submitSupportRequest } from '@/app/actions'
 
 export function PrioritySupport() {
   const [subject, setSubject] = useState('')
   const [message, setMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
-  const supabase = createClient()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -29,43 +28,17 @@ export function PrioritySupport() {
     setIsSubmitting(true)
 
     try {
-      // Get user info
-      const { data: { user } } = await supabase.auth.getUser()
-      
-      if (!user) {
-        toast.error('Vous devez être connecté')
-        return
+      const result = await submitSupportRequest(subject.trim(), message.trim())
+
+      if (result.error) {
+        toast.error(result.error)
+      } else {
+        toast.success('Votre demande a été envoyée. Nous vous répondrons dans les plus brefs délais.')
+        setSubject('')
+        setMessage('')
+        setIsSubmitted(true)
+        setTimeout(() => setIsSubmitted(false), 5000)
       }
-
-      // Get user profile
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('email')
-        .eq('id', user.id)
-        .single()
-
-      const userEmail = profile ? (profile as { email: string }).email : user.email || 'unknown@example.com'
-
-      // Send email via Resend
-      await resend.emails.send({
-        from: 'RestoBoost Support <support@restoboost.com>',
-        to: 'support@restoboost.com', // Your support email
-        replyTo: userEmail,
-        subject: `[Support Prioritaire] ${subject}`,
-        html: `
-          <h2>Nouvelle demande de support prioritaire</h2>
-          <p><strong>De:</strong> ${userEmail}</p>
-          <p><strong>Sujet:</strong> ${subject}</p>
-          <hr>
-          <p>${message.replace(/\n/g, '<br>')}</p>
-        `,
-      })
-
-      toast.success('Votre demande a été envoyée. Nous vous répondrons dans les plus brefs délais.')
-      setSubject('')
-      setMessage('')
-      setIsSubmitted(true)
-      setTimeout(() => setIsSubmitted(false), 5000)
     } catch (error) {
       console.error('Error sending support request:', error)
       toast.error('Erreur lors de l\'envoi de votre demande')

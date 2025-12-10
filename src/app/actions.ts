@@ -230,3 +230,58 @@ export async function createDefaultRestaurant(userId: string) {
   return { success: true, restaurant: data }
 }
 
+export async function submitSupportRequest(subject: string, message: string) {
+  const supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'Vous devez être connecté' }
+  }
+
+  // Get user profile
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('email, plan')
+    .eq('id', user.id)
+    .single()
+
+  if (!profile) {
+    return { error: 'Profil non trouvé' }
+  }
+
+  const profileData = profile as { email: string; plan: string }
+  const userEmail = profileData.email || user.email || 'unknown@example.com'
+  const plan = profileData.plan || 'free'
+
+  // Only allow Pro and Enterprise plans
+  if (plan === 'free') {
+    return { error: 'Le support prioritaire est réservé aux plans Pro et Enterprise' }
+  }
+
+  try {
+    // Send email via Resend
+    await resend.emails.send({
+      from: 'RestoBoost Support <support@restoboost.com>',
+      to: 'support@restoboost.com', // Your support email
+      replyTo: userEmail,
+      subject: `[Support Prioritaire - ${plan.toUpperCase()}] ${subject}`,
+      html: `
+        <h2>Nouvelle demande de support prioritaire</h2>
+        <p><strong>De:</strong> ${userEmail}</p>
+        <p><strong>Plan:</strong> ${plan}</p>
+        <p><strong>Sujet:</strong> ${subject}</p>
+        <hr>
+        <p>${message.replace(/\n/g, '<br>')}</p>
+      `,
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error('Error sending support request:', error)
+    return { error: 'Erreur lors de l\'envoi de votre demande' }
+  }
+}
+
