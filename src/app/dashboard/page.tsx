@@ -25,7 +25,10 @@ export default async function DashboardPage() {
     .eq('id', user.id)
     .single()
 
-  const plan = profile?.plan || 'free'
+  // Extract plan with type assertion
+  const plan = profile 
+    ? (profile as { plan: string }).plan 
+    : 'free'
 
   // Get user's restaurant
   const { data: restaurant } = await supabase
