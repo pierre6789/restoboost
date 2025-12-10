@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { MessageCircle, Send, CheckCircle2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { getResend } from '@/lib/resend'
+import { resend } from '@/lib/resend'
 
 export function PrioritySupport() {
   const [subject, setSubject] = useState('')
@@ -47,7 +47,6 @@ export function PrioritySupport() {
       const userEmail = profile ? (profile as { email: string }).email : user.email || 'unknown@example.com'
 
       // Send email via Resend
-      const resend = getResend()
       await resend.emails.send({
         from: 'RestoBoost Support <support@restoboost.com>',
         to: 'support@restoboost.com', // Your support email
