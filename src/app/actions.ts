@@ -149,7 +149,7 @@ export async function updateRestaurantSettings(
       name,
       slug,
       google_maps_url: googleMapsUrl || null,
-    })
+    } as never)
     .eq('id', restaurantId)
 
   if (error) {
