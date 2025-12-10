@@ -2,6 +2,7 @@ import { LoginForm } from '@/components/login-form'
 import Link from 'next/link'
 import { Navbar } from '@/components/navbar'
 import { Logo } from '@/components/logo'
+import { Suspense } from 'react'
 
 export default function LoginPage() {
   return (
@@ -18,7 +19,9 @@ export default function LoginPage() {
               <p className="text-gray-600">Accédez à votre tableau de bord</p>
             </div>
 
-          <LoginForm />
+          <Suspense fallback={<div className="text-center py-4">Chargement...</div>}>
+            <LoginForm />
+          </Suspense>
 
           <div className="text-center text-sm">
             <span className="text-gray-600">Pas encore de compte ? </span>
