@@ -1,0 +1,26 @@
+# GitHub Actions Workflow pour réinitialiser les scans mensuellement
+# Alternative à pg_cron si celui-ci n'est pas disponible
+
+name: Reset Monthly Scans
+
+on:
+  schedule:
+    # Exécute le 1er de chaque mois à minuit UTC
+    - cron: '0 0 1 * *'
+  workflow_dispatch: # Permet de déclencher manuellement
+
+jobs:
+  reset-scans:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Supabase Edge Function
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.RESET_SCANS_SECRET }}" \
+            -H "Content-Type: application/json" \
+            "${{ secrets.SUPABASE_URL }}/functions/v1/reset-scans"
+        
+        env:
+          RESET_SCANS_SECRET: ${{ secrets.RESET_SCANS_SECRET }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+

@@ -1,0 +1,9 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/reset-scans",
+      "schedule": "0 0 1 * *"
+    }
+  ]
+}
+
