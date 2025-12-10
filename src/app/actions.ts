@@ -84,7 +84,7 @@ export async function logEvent(restaurantId: string, type: 'scan' | 'positive_re
   const { error } = await supabase.from('events').insert({
     restaurant_id: restaurantId,
     type,
-  })
+  } as never)
 
   if (error) {
     console.error('Error logging event:', error)
