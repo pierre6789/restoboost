@@ -20,7 +20,7 @@ interface RestaurantSelectorProps {
   restaurants: Restaurant[]
   currentRestaurantId: string
   plan: string
-  onCreateRestaurant: () => void
+  userId: string
 }
 
 export function RestaurantSelector({
