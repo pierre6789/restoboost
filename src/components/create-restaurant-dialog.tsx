@@ -91,12 +91,13 @@ export function CreateRestaurantDialog({
     if (error) {
       console.error('Error creating restaurant:', error)
       toast.error('Erreur lors de la création')
-    } else {
+    } else if (data) {
+      const restaurantData = data as { id: string }
       toast.success('Restaurant créé avec succès')
       setName('')
       onOpenChange(false)
       // Redirect to dashboard with new restaurant selected
-      router.push(`/dashboard?restaurant=${data.id}`)
+      router.push(`/dashboard?restaurant=${restaurantData.id}`)
       router.refresh()
     }
     setIsCreating(false)
