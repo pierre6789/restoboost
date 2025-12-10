@@ -7,14 +7,19 @@ import { Logo } from '@/components/logo'
 import { ArrowRight, QrCode, TrendingUp, Shield, Zap, BarChart3, Smartphone } from 'lucide-react'
 
 export default async function HomePage() {
-  const supabase = await createClient()
+  try {
+    const supabase = await createClient()
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
-  if (user) {
-    redirect('/dashboard')
+    if (user) {
+      redirect('/dashboard')
+    }
+  } catch (error) {
+    // If Supabase is not configured, continue to show the landing page
+    console.error('Error initializing Supabase:', error)
   }
 
   return (
