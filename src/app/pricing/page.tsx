@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { PricingCard } from '@/components/pricing-card'
 import { Navbar } from '@/components/navbar'
+import { PricingPageClient } from '@/components/pricing-page-client'
 
 export default async function PricingPage() {
   const supabase = await createClient()
@@ -30,7 +31,8 @@ export default async function PricingPage() {
   const plans = [
     {
       name: 'Gratuit',
-      price: '0',
+      priceMonthly: '0',
+      priceYearly: '0',
       period: 'toujours',
       description: 'Parfait pour tester RestoRise',
       features: [
@@ -41,12 +43,14 @@ export default async function PricingPage() {
         'Pas de suivi du personnel',
         'Branding RestoRise visible',
       ],
-      priceId: null,
+      priceIdMonthly: null,
+      priceIdYearly: null,
       popular: false,
     },
     {
       name: 'Pro',
-      price: '29',
+      priceMonthly: '29',
+      priceYearly: '279', // 29 * 12 * 0.8 = 278.4, arrondi à 279 (20% de réduction)
       period: 'mois',
       description: 'Pour les restaurants qui veulent grandir',
       features: [
@@ -57,12 +61,14 @@ export default async function PricingPage() {
         'Analytics avancés',
         'Support prioritaire',
       ],
-      priceId: process.env.STRIPE_PRO_PRICE_ID || 'price_pro',
+      priceIdMonthly: process.env.STRIPE_PRO_PRICE_ID || 'price_pro',
+      priceIdYearly: process.env.STRIPE_PRO_YEARLY_PRICE_ID || 'price_pro_yearly',
       popular: true,
     },
     {
       name: 'Enterprise',
-      price: '99',
+      priceMonthly: '99',
+      priceYearly: '950', // 99 * 12 * 0.8 = 950.4, arrondi à 950 (20% de réduction)
       period: 'mois',
       description: 'Pour les chaînes de restaurants',
       features: [
@@ -73,7 +79,8 @@ export default async function PricingPage() {
         'Support dédié',
         'Formation personnalisée',
       ],
-      priceId: process.env.STRIPE_ENTERPRISE_PRICE_ID || 'price_enterprise',
+      priceIdMonthly: process.env.STRIPE_ENTERPRISE_PRICE_ID || 'price_enterprise',
+      priceIdYearly: process.env.STRIPE_ENTERPRISE_YEARLY_PRICE_ID || 'price_enterprise_yearly',
       popular: false,
     },
   ]
@@ -92,17 +99,12 @@ export default async function PricingPage() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          {plans.map((plan) => (
-            <PricingCard
-              key={plan.name}
-              plan={plan}
-              currentStatus={subscriptionStatus}
-              currentPlanType={currentPlan}
-              isAuthenticated={!!user}
-            />
-          ))}
-        </div>
+        <PricingPageClient
+          plans={plans}
+          subscriptionStatus={subscriptionStatus}
+          currentPlan={currentPlan}
+          isAuthenticated={!!user}
+        />
 
         {user && (
           <div className="mt-12 text-center">

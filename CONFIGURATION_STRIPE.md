@@ -4,11 +4,25 @@
 
 1. Allez sur votre [Dashboard Stripe](https://dashboard.stripe.com/)
 2. Allez dans **Produits** (Products)
-3. Pour chaque produit (Pro et Enterprise) :
+3. Pour chaque produit (Pro et Enterprise), vous devez créer **2 prix** :
+   - **Un prix mensuel** (billing period: Monthly)
+   - **Un prix annuel** (billing period: Yearly)
+   
+   Pour chaque prix :
    - Cliquez sur le produit
-   - Vous verrez les **Prix** (Prices) associés
+   - Cliquez sur **Ajouter un prix** (Add price)
+   - Configurez :
+     - **Prix** : Le montant (ex: 29€ pour Pro mensuel, 279€ pour Pro annuel)
+     - **Période de facturation** : Mensuel ou Annuel
+     - **Type de facturation** : Récurrent
    - Copiez le **Price ID** (commence par `price_...`)
    - Exemple : `price_1ABC123def456GHI789jkl`
+
+**Vous aurez donc 4 Price IDs au total** :
+- Pro Mensuel
+- Pro Annuel
+- Enterprise Mensuel
+- Enterprise Annuel
 
 ## ✅ Étape 2 : Ajouter les Price IDs dans les Variables d'Environnement
 
@@ -17,8 +31,13 @@
 Ajoutez ou modifiez ces lignes dans votre fichier `.env.local` :
 
 ```env
+# Prix mensuels
 STRIPE_PRO_PRICE_ID=price_xxxxx
 STRIPE_ENTERPRISE_PRICE_ID=price_xxxxx
+
+# Prix annuels
+STRIPE_PRO_YEARLY_PRICE_ID=price_xxxxx
+STRIPE_ENTERPRISE_YEARLY_PRICE_ID=price_xxxxx
 ```
 
 **Remplacez `price_xxxxx`** par les vrais Price IDs que vous avez copiés.
@@ -28,8 +47,10 @@ STRIPE_ENTERPRISE_PRICE_ID=price_xxxxx
 1. Allez sur votre projet Vercel
 2. Allez dans **Settings** > **Environment Variables**
 3. Ajoutez ou modifiez :
-   - `STRIPE_PRO_PRICE_ID` = votre Price ID Pro
-   - `STRIPE_ENTERPRISE_PRICE_ID` = votre Price ID Enterprise
+   - `STRIPE_PRO_PRICE_ID` = votre Price ID Pro Mensuel
+   - `STRIPE_ENTERPRISE_PRICE_ID` = votre Price ID Enterprise Mensuel
+   - `STRIPE_PRO_YEARLY_PRICE_ID` = votre Price ID Pro Annuel
+   - `STRIPE_ENTERPRISE_YEARLY_PRICE_ID` = votre Price ID Enterprise Annuel
 4. **Important** : Sélectionnez tous les environnements (Production, Preview, Development)
 5. Cliquez sur **Save**
 
@@ -82,9 +103,13 @@ Assurez-vous d'avoir ces variables d'environnement configurées :
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_xxxxx (ou pk_live_xxxxx)
 STRIPE_SECRET_KEY=sk_test_xxxxx (ou sk_live_xxxxx)
 
-# Price IDs (que vous venez de créer)
+# Price IDs Mensuels (que vous venez de créer)
 STRIPE_PRO_PRICE_ID=price_xxxxx
 STRIPE_ENTERPRISE_PRICE_ID=price_xxxxx
+
+# Price IDs Annuels (que vous venez de créer)
+STRIPE_PRO_YEARLY_PRICE_ID=price_xxxxx
+STRIPE_ENTERPRISE_YEARLY_PRICE_ID=price_xxxxx
 
 # Webhook Secret
 STRIPE_WEBHOOK_SECRET=whsec_xxxxx
@@ -139,8 +164,9 @@ Quand vous êtes prêt pour la production :
 
 ### Problème : "Price ID requis" ou erreur lors du checkout
 
-- Vérifiez que `STRIPE_PRO_PRICE_ID` et `STRIPE_ENTERPRISE_PRICE_ID` sont bien définis
+- Vérifiez que tous les Price IDs sont bien définis (mensuels ET annuels)
 - Vérifiez que les Price IDs sont corrects (commencent par `price_`)
+- Vérifiez que vous avez créé les 4 prix dans Stripe (2 pour Pro, 2 pour Enterprise)
 - Redémarrez votre serveur après avoir modifié `.env.local`
 
 ### Problème : Le webhook ne fonctionne pas
@@ -160,13 +186,16 @@ Quand vous êtes prêt pour la production :
 ## 📝 Checklist de Configuration
 
 - [ ] Produits créés sur Stripe (Pro et Enterprise)
-- [ ] Price IDs récupérés et ajoutés dans `.env.local`
-- [ ] Price IDs ajoutés dans Vercel (Environment Variables)
+- [ ] **4 Prix créés** : Pro Mensuel, Pro Annuel, Enterprise Mensuel, Enterprise Annuel
+- [ ] Price IDs mensuels récupérés et ajoutés dans `.env.local`
+- [ ] Price IDs annuels récupérés et ajoutés dans `.env.local`
+- [ ] Tous les Price IDs ajoutés dans Vercel (Environment Variables)
 - [ ] Webhook créé avec l'URL correcte
 - [ ] Événements webhook sélectionnés (5 événements)
 - [ ] `STRIPE_WEBHOOK_SECRET` ajouté dans `.env.local`
 - [ ] `STRIPE_WEBHOOK_SECRET` ajouté dans Vercel
-- [ ] Test de checkout effectué avec succès
+- [ ] Test de checkout mensuel effectué avec succès
+- [ ] Test de checkout annuel effectué avec succès
 - [ ] Test du webhook vérifié dans Stripe Dashboard
 
 Une fois toutes ces étapes complétées, votre intégration Stripe sera fonctionnelle ! 🎉
