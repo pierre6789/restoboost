@@ -14,9 +14,18 @@ export default async function AdminPage() {
     redirect('/login')
   }
 
-  // Check if user is admin (you can customize this logic)
-  // For now, we'll allow any authenticated user to access this page
-  // In production, you should add an 'is_admin' field to profiles table
+  // Check if user is admin (only pierrevuillermet1@gmail.com)
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('email')
+    .eq('id', user.id)
+    .single()
+
+  const userEmail = profile ? (profile as { email: string }).email : user.email
+
+  if (userEmail !== 'pierrevuillermet1@gmail.com') {
+    redirect('/dashboard')
+  }
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

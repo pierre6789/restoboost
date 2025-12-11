@@ -1,8 +1,33 @@
+import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
   try {
+    // Check if user is admin
+    const supabase = await createClient()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
+    }
+
+    // Get user email
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('email')
+      .eq('id', user.id)
+      .single()
+
+    const userEmail = profile ? (profile as { email: string }).email : user.email
+
+    // Only allow pierrevuillermet1@gmail.com
+    if (userEmail !== 'pierrevuillermet1@gmail.com') {
+      return NextResponse.json({ error: 'Accès non autorisé' }, { status: 403 })
+    }
+
     const { email, plan, subscriptionStatus } = await request.json()
 
     if (!email) {
