@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/table'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { format } from 'date-fns'
+import { fr } from 'date-fns/locale'
 
 interface FeedbackListProps {
   restaurantId: string
@@ -82,7 +83,7 @@ export async function FeedbackList({ restaurantId }: FeedbackListProps) {
             {typedFeedbacks.map((feedback) => (
               <TableRow key={feedback.id}>
                 <TableCell>
-                  {format(new Date(feedback.created_at), 'PPp')}
+                  {format(new Date(feedback.created_at), 'PPp', { locale: fr })}
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-1">
