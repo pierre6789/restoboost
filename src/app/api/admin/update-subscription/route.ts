@@ -28,14 +28,17 @@ export async function POST(request: Request) {
 
     const updateData: any = { subscription_status: status }
     
-    // Update plan_type if provided, or set based on status
+    // Update plan_type and plan if provided, or set based on status
     if (planType && ['free', 'pro', 'enterprise'].includes(planType)) {
       updateData.plan_type = planType
+      updateData.plan = planType
     } else if (status === 'active' && !planType) {
       // Default to 'pro' if status is active but no plan type specified
       updateData.plan_type = 'pro'
+      updateData.plan = 'pro'
     } else if (status === 'free') {
       updateData.plan_type = 'free'
+      updateData.plan = 'free'
     }
 
     const { error } = await adminSupabase
