@@ -12,9 +12,12 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
 STRIPE_SECRET_KEY=your_stripe_secret_key
 STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
-# Optional: Price IDs for subscription plans
+# Price IDs for subscription plans (Monthly)
 STRIPE_PRO_PRICE_ID=price_xxxxx
 STRIPE_ENTERPRISE_PRICE_ID=price_xxxxx
+# Price IDs for subscription plans (Yearly)
+STRIPE_PRO_YEARLY_PRICE_ID=price_xxxxx
+STRIPE_ENTERPRISE_YEARLY_PRICE_ID=price_xxxxx
 
 # Resend Configuration
 RESEND_API_KEY=your_resend_api_key
