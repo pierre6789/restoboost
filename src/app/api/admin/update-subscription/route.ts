@@ -14,20 +14,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
     }
 
-    // Get user email
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('email')
-      .eq('id', user.id)
-      .single()
-
-    const userEmail = profile ? (profile as { email: string }).email : user.email
-
-    // Only allow pierrevuillermet1@gmail.com
-    if (userEmail !== 'pierrevuillermet1@gmail.com') {
-      return NextResponse.json({ error: 'Accès non autorisé' }, { status: 403 })
-    }
-
     const { status, planType } = await request.json()
 
     if (!['free', 'active', 'canceled', 'past_due'].includes(status)) {

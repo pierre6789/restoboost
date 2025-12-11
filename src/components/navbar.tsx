@@ -37,13 +37,6 @@ export async function Navbar() {
                     Facturation
                   </Button>
                 </Link>
-                {isAdmin && (
-                  <Link href="/dashboard/admin">
-                    <Button variant="ghost" size="sm">
-                      Admin
-                    </Button>
-                  </Link>
-                )}
                 <Suspense fallback={
                   <Link href="/dashboard/settings" className="relative">
                     <Button variant="ghost" size="sm" className="gap-2">
