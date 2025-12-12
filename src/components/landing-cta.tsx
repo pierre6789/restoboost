@@ -53,30 +53,30 @@ export function LandingCTA() {
         ))}
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 py-12 sm:py-16 md:py-24">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 px-2">
             Prêt à booster votre{' '}
             <span className="text-white/90">réputation ?</span>
           </h2>
-          <p className="text-xl md:text-2xl mb-12 text-orange-50 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-8 sm:mb-10 md:mb-12 text-orange-50 max-w-2xl mx-auto leading-relaxed px-2">
             Rejoignez les restaurants qui protègent leur réputation en ligne et augmentent leur visibilité sur Google Maps
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center w-full sm:w-auto px-4">
             <Button
               asChild
               size="lg"
-              className="bg-white text-[#FF6B35] hover:bg-gray-100 text-lg px-8 py-6 h-auto shadow-2xl hover:shadow-white/50 transition-all group"
+              className="bg-white text-[#FF6B35] hover:bg-gray-100 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto shadow-2xl hover:shadow-white/50 transition-all group w-full sm:w-auto"
             >
-              <Link href="/signup" className="flex items-center gap-2">
+              <Link href="/signup" className="flex items-center justify-center gap-2">
                 Commencer gratuitement
-                <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
             
@@ -84,7 +84,7 @@ export function LandingCTA() {
               asChild
               size="lg"
               variant="outline"
-              className="text-lg px-8 py-6 h-auto border-2 border-white/30 hover:bg-white/10 backdrop-blur-sm text-white hover:text-white"
+              className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto border-2 border-white/30 hover:bg-white/10 backdrop-blur-sm text-white hover:text-white w-full sm:w-auto"
             >
               <Link href="/pricing">Voir les tarifs</Link>
             </Button>
@@ -96,7 +96,7 @@ export function LandingCTA() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="mt-12 flex flex-wrap justify-center items-center gap-6 text-sm text-orange-50"
+            className="mt-8 sm:mt-10 md:mt-12 flex flex-col sm:flex-row flex-wrap justify-center items-center gap-4 sm:gap-6 text-xs sm:text-sm text-orange-50 px-4"
           >
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-white rounded-full"></div>

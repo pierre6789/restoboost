@@ -15,7 +15,7 @@ export function Logo({
   height = 60
 }: LogoProps) {
   const content = (
-    <div className={`flex items-center ${className}`}>
+    <div className="flex items-center">
       <Image
         src="/logo.png"
         alt="RestoRise"
