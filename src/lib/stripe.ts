@@ -9,12 +9,12 @@ export function getStripe(): Stripe {
     if (!secretKey) {
       // Return a mock instance during build - will fail at runtime if actually used
       stripeInstance = new Stripe('sk_test_build_time_placeholder', {
-        apiVersion: '2025-11-17.clover',
+        apiVersion: '2025-12-15.clover',
         typescript: true,
       })
     } else {
       stripeInstance = new Stripe(secretKey, {
-        apiVersion: '2025-11-17.clover',
+        apiVersion: '2025-12-15.clover',
         typescript: true,
       })
     }

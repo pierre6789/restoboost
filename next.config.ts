@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  transpilePackages: ['motion-dom', 'framer-motion'],
 };
 
 export default nextConfig;
