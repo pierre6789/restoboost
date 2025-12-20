@@ -4,8 +4,25 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, Sparkles } from 'lucide-react'
+import { useState, useEffect } from 'react'
+
+// Positions fixes pour éviter les problèmes d'hydratation
+const fixedPositions = [
+  { left: 10, top: 20, duration: 3.5, delay: 0.2 },
+  { left: 80, top: 15, duration: 4.2, delay: 0.8 },
+  { left: 30, top: 60, duration: 3.8, delay: 0.4 },
+  { left: 70, top: 75, duration: 4.5, delay: 1.2 },
+  { left: 50, top: 40, duration: 3.2, delay: 0.6 },
+  { left: 90, top: 85, duration: 4.0, delay: 1.0 },
+]
 
 export function LandingCTA() {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   return (
     <section className="py-24 bg-gradient-to-br from-[#FF6B35] via-[#E55A2B] to-[#FF6B35] text-white relative overflow-hidden">
       {/* Animated Background */}
@@ -28,30 +45,32 @@ export function LandingCTA() {
       </div>
 
       {/* Floating Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(6)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, -30, 0],
-              opacity: [0.3, 0.6, 0.3],
-              scale: [1, 1.2, 1],
-            }}
-            transition={{
-              duration: 3 + Math.random() * 2,
-              repeat: Infinity,
-              delay: Math.random() * 2,
-            }}
-          >
-            <Sparkles className="h-8 w-8 text-white/30" />
-          </motion.div>
-        ))}
-      </div>
+      {mounted && (
+        <div className="absolute inset-0 overflow-hidden">
+          {fixedPositions.map((pos, i) => (
+            <motion.div
+              key={i}
+              className="absolute"
+              style={{
+                left: `${pos.left}%`,
+                top: `${pos.top}%`,
+              }}
+              animate={{
+                y: [0, -30, 0],
+                opacity: [0.3, 0.6, 0.3],
+                scale: [1, 1.2, 1],
+              }}
+              transition={{
+                duration: pos.duration,
+                repeat: Infinity,
+                delay: pos.delay,
+              }}
+            >
+              <Sparkles className="h-8 w-8 text-white/30" />
+            </motion.div>
+          ))}
+        </div>
+      )}
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 py-12 sm:py-16 md:py-24">
         <motion.div
