@@ -28,6 +28,7 @@ export async function POST(request: Request) {
       priceId === process.env.STRIPE_ENTERPRISE_PRICE_ID ? 'enterprise' : 'pro'
 
     // Create Stripe Checkout Session
+    const baseUrl = process.env.NEXT_PUBLIC_URL || 'https://restorise.fr'
     const session = await stripe.checkout.sessions.create({
       customer_email: user.email || undefined,
       line_items: [
@@ -37,8 +38,8 @@ export async function POST(request: Request) {
         },
       ],
       mode: 'subscription',
-      success_url: `${process.env.NEXT_PUBLIC_URL}/dashboard/billing?success=true`,
-      cancel_url: `${process.env.NEXT_PUBLIC_URL}/dashboard/billing?canceled=true`,
+      success_url: `${baseUrl}/dashboard/billing?success=true`,
+      cancel_url: `${baseUrl}/dashboard/billing?canceled=true`,
       metadata: {
         userId: user.id,
         planType: planType,
