@@ -28,7 +28,8 @@ export async function POST(request: Request) {
       priceId === process.env.STRIPE_ENTERPRISE_PRICE_ID ? 'enterprise' : 'pro'
 
     // Create Stripe Checkout Session
-    const baseUrl = process.env.NEXT_PUBLIC_URL || 'https://restorise.fr'
+    // Always use restorise.fr for Stripe redirects to ensure correct domain
+    const baseUrl = 'https://restorise.fr'
     const session = await stripe.checkout.sessions.create({
       customer_email: user.email || undefined,
       line_items: [
