@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
-import { Star, Smile, Frown } from 'lucide-react'
+import { Star } from 'lucide-react'
 
 interface ReviewFormProps {
   restaurantId: string
@@ -122,40 +122,6 @@ export function ReviewForm({ restaurantId, googleMapsUrl, staffId }: ReviewFormP
                 </button>
               )
             })}
-          </div>
-
-          {/* Emoji Alternative */}
-          <div className="flex justify-center gap-6 pt-2">
-            <button
-              type="button"
-              onClick={() => handleRatingClick(5)}
-              className="transition-all transform hover:scale-110 active:scale-95"
-              aria-label="Satisfait"
-            >
-              <div className="flex flex-col items-center gap-2">
-                <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
-                  <Smile size={32} className="text-green-600" />
-                </div>
-                <span className="text-sm font-medium text-gray-700">
-                  Satisfait
-                </span>
-              </div>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleRatingClick(1)}
-              className="transition-all transform hover:scale-110 active:scale-95"
-              aria-label="Insatisfait"
-            >
-              <div className="flex flex-col items-center gap-2">
-                <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
-                  <Frown size={32} className="text-red-600" />
-                </div>
-                <span className="text-sm font-medium text-gray-700">
-                  Insatisfait
-                </span>
-              </div>
-            </button>
           </div>
         </div>
       ) : (
