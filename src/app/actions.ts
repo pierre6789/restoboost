@@ -266,6 +266,13 @@ export async function uploadRestaurantLogo(
       }
     }
 
+    // Get restaurant slug for revalidation
+    const { data: restaurantData } = await supabase
+      .from('restaurants')
+      .select('slug')
+      .eq('id', restaurantId)
+      .single()
+
     // Update restaurant with new logo URL
     const { error: updateError } = await supabase
       .from('restaurants')
@@ -278,7 +285,12 @@ export async function uploadRestaurantLogo(
     }
 
     revalidatePath('/dashboard/settings')
-    revalidatePath(`/review/${restaurantId}`)
+    if (restaurantData) {
+      const slug = (restaurantData as { slug: string }).slug
+      revalidatePath(`/review/${slug}`)
+    }
+    // Also revalidate all review pages
+    revalidatePath('/review', 'layout')
     return { success: true, logoUrl: publicUrl }
   } catch (error) {
     console.error('Error uploading logo:', error)

@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { toast } from 'sonner'
 import Image from 'next/image'
 import { Upload, X } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 interface SettingsFormProps {
   restaurant: {
@@ -22,6 +23,7 @@ interface SettingsFormProps {
 }
 
 export function SettingsForm({ restaurant, plan }: SettingsFormProps) {
+  const router = useRouter()
   const [name, setName] = useState(restaurant.name)
   const [slug, setSlug] = useState(restaurant.slug)
   const [googleMapsUrl, setGoogleMapsUrl] = useState(
@@ -131,6 +133,8 @@ export function SettingsForm({ restaurant, plan }: SettingsFormProps) {
         if (fileInput) {
           fileInput.value = ''
         }
+        // Refresh the page data to get the updated logo
+        router.refresh()
       }
     } catch (error) {
       toast.error('Une erreur est survenue')
