@@ -46,7 +46,7 @@ export function LandingCTA() {
 
       {/* Floating Elements */}
       {mounted && (
-        <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden" suppressHydrationWarning>
           {fixedPositions.map((pos, i) => (
             <motion.div
               key={i}
