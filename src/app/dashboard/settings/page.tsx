@@ -41,6 +41,16 @@ export default async function SettingsPage({
     redirect('/dashboard')
   }
 
+  // Get user plan
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('plan')
+    .eq('id', user.id)
+    .single()
+
+  const profileData = profile as { plan?: string } | null
+  const plan = profileData?.plan || 'free'
+
   return (
     <>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -53,7 +63,7 @@ export default async function SettingsPage({
           </p>
         </div>
 
-        <SettingsForm restaurant={restaurant} />
+        <SettingsForm restaurant={restaurant} plan={plan} />
       </div>
     </>
   )

@@ -161,6 +161,131 @@ export async function updateRestaurantSettings(
   return { success: true }
 }
 
+export async function uploadRestaurantLogo(
+  restaurantId: string,
+  formData: FormData
+) {
+  const supabase = await createClient()
+
+  // Get current user
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'Non authentifié' }
+  }
+
+  // Verify restaurant belongs to user
+  const { data: restaurant } = await supabase
+    .from('restaurants')
+    .select('id, user_id')
+    .eq('id', restaurantId)
+    .single()
+
+  if (!restaurant) {
+    return { error: 'Restaurant non trouvé ou accès non autorisé' }
+  }
+
+  const restaurantData = restaurant as { id: string; user_id: string }
+  if (restaurantData.user_id !== user.id) {
+    return { error: 'Accès non autorisé' }
+  }
+
+  // Check user plan (only Enterprise can upload logos)
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('plan')
+    .eq('id', user.id)
+    .single()
+
+  const profileData = profile as { plan?: string } | null
+  const plan = profileData?.plan || 'free'
+
+  if (plan !== 'enterprise') {
+    return { error: 'L\'upload de logo est réservé aux plans Enterprise' }
+  }
+
+  const file = formData.get('logo') as File
+  if (!file) {
+    return { error: 'Aucun fichier fourni' }
+  }
+
+  // Validate file type
+  if (!file.type.startsWith('image/')) {
+    return { error: 'Le fichier doit être une image' }
+  }
+
+  // Validate file size (max 5MB)
+  if (file.size > 5 * 1024 * 1024) {
+    return { error: 'Le fichier ne doit pas dépasser 5MB' }
+  }
+
+  try {
+    // Generate unique filename
+    const fileExt = file.name.split('.').pop()
+    const fileName = `${restaurantId}-${Date.now()}.${fileExt}`
+    const filePath = `restaurant-logos/${fileName}`
+
+    // Upload to Supabase Storage
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('restaurant-assets')
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false,
+      })
+
+    if (uploadError) {
+      console.error('Error uploading logo:', uploadError)
+      return { error: 'Erreur lors de l\'upload du logo' }
+    }
+
+    // Get public URL
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from('restaurant-assets').getPublicUrl(filePath)
+
+    // Delete old logo if exists
+    const { data: currentRestaurant } = await supabase
+      .from('restaurants')
+      .select('logo_url')
+      .eq('id', restaurantId)
+      .single()
+
+    if (currentRestaurant) {
+      const currentLogoUrl = (currentRestaurant as { logo_url: string | null }).logo_url
+      if (currentLogoUrl && currentLogoUrl.includes('restaurant-assets')) {
+        // Extract file path from URL
+        const urlParts = currentLogoUrl.split('restaurant-assets/')
+        if (urlParts.length > 1) {
+          const oldFilePath = urlParts[1].split('?')[0]
+          if (oldFilePath) {
+            await supabase.storage.from('restaurant-assets').remove([oldFilePath])
+          }
+        }
+      }
+    }
+
+    // Update restaurant with new logo URL
+    const { error: updateError } = await supabase
+      .from('restaurants')
+      .update({ logo_url: publicUrl } as never)
+      .eq('id', restaurantId)
+
+    if (updateError) {
+      console.error('Error updating restaurant logo:', updateError)
+      return { error: 'Erreur lors de la mise à jour du logo' }
+    }
+
+    revalidatePath('/dashboard/settings')
+    revalidatePath(`/review/${restaurantId}`)
+    return { success: true, logoUrl: publicUrl }
+  } catch (error) {
+    console.error('Error uploading logo:', error)
+    return { error: 'Une erreur est survenue lors de l\'upload' }
+  }
+}
+
 export async function createDefaultRestaurant(userId: string, restaurantName?: string) {
   // Use admin client to bypass RLS
   const supabase = createAdminClient()
