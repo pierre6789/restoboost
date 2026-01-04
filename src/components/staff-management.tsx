@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { toast } from 'sonner'
 import { Plus, Copy, Trash2, Download } from 'lucide-react'
 import { QRCodeSVG } from 'qrcode.react'
-import { downloadQRCode } from '@/lib/qrcode-utils'
+import { downloadQRCode, getQRCodeBaseUrl } from '@/lib/qrcode-utils'
 import type { Database } from '@/lib/supabase/database.types'
 
 type StaffMember = Database['public']['Tables']['staff_members']['Row']
@@ -95,7 +95,7 @@ export function StaffManagement({ restaurantId, restaurantSlug }: StaffManagemen
   }
 
   const copyStaffQRUrl = (staffId: string) => {
-    const baseUrl = process.env.NEXT_PUBLIC_URL || 'https://restorise.fr'
+    const baseUrl = getQRCodeBaseUrl()
     const slug = restaurantSlug || 'your-slug'
     const url = `${baseUrl}/review/${slug}?staff_id=${staffId}`
     navigator.clipboard.writeText(url)
@@ -103,7 +103,7 @@ export function StaffManagement({ restaurantId, restaurantSlug }: StaffManagemen
   }
 
   const getStaffQRUrl = (staffId: string) => {
-    const baseUrl = process.env.NEXT_PUBLIC_URL || 'https://restorise.fr'
+    const baseUrl = getQRCodeBaseUrl()
     const slug = restaurantSlug || 'your-slug'
     return `${baseUrl}/review/${slug}?staff_id=${staffId}`
   }

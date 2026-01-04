@@ -1,3 +1,12 @@
+/**
+ * Get the base URL for QR codes, always using restorise.fr
+ * This ensures QR codes always point to the correct domain
+ */
+export function getQRCodeBaseUrl(): string {
+  // Always use restorise.fr for QR codes, regardless of NEXT_PUBLIC_URL
+  return 'https://restorise.fr'
+}
+
 export function downloadQRCode(svgId: string, filename: string) {
   const svg = document.getElementById(svgId)
   if (!svg) return
