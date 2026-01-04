@@ -254,7 +254,7 @@ export function SettingsForm({ restaurant, plan }: SettingsFormProps) {
                 onChange={(e) => setSlug(e.target.value)}
                 placeholder="mon-restaurant"
                 required
-                pattern="[a-z0-9-]+"
+                pattern="[a-z0-9\-]+"
                 className="flex-1"
               />
             </div>
