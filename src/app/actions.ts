@@ -206,6 +206,9 @@ export async function uploadRestaurantLogo(
     return { error: 'L\'upload de logo est réservé aux plans Enterprise' }
   }
 
+  // Use admin client for update to bypass potential RLS issues
+  const adminSupabase = createAdminClient()
+
   const file = formData.get('logo') as File
   if (!file) {
     return { error: 'Aucun fichier fourni' }
@@ -245,6 +248,8 @@ export async function uploadRestaurantLogo(
       data: { publicUrl },
     } = supabase.storage.from('restaurant-assets').getPublicUrl(filePath)
 
+    console.log('Logo uploaded successfully, public URL:', publicUrl)
+
     // Delete old logo if exists
     const { data: currentRestaurant } = await supabase
       .from('restaurants')
@@ -260,7 +265,10 @@ export async function uploadRestaurantLogo(
         if (urlParts.length > 1) {
           const oldFilePath = urlParts[1].split('?')[0]
           if (oldFilePath) {
-            await supabase.storage.from('restaurant-assets').remove([oldFilePath])
+            const { error: deleteError } = await supabase.storage.from('restaurant-assets').remove([oldFilePath])
+            if (deleteError) {
+              console.warn('Error deleting old logo:', deleteError)
+            }
           }
         }
       }
@@ -273,15 +281,37 @@ export async function uploadRestaurantLogo(
       .eq('id', restaurantId)
       .single()
 
-    // Update restaurant with new logo URL
-    const { error: updateError } = await supabase
+    // Update restaurant with new logo URL using admin client to bypass RLS
+    console.log('Updating restaurant logo_url to:', publicUrl)
+    console.log('Restaurant ID:', restaurantId)
+    
+    const { data: updateData, error: updateError } = await adminSupabase
       .from('restaurants')
-      .update({ logo_url: publicUrl } as never)
+      .update({ 
+        logo_url: publicUrl
+      } as never)
       .eq('id', restaurantId)
+      .eq('user_id', user.id) // Double check user ownership
+      .select('id, logo_url')
 
     if (updateError) {
       console.error('Error updating restaurant logo:', updateError)
-      return { error: 'Erreur lors de la mise à jour du logo' }
+      console.error('Update error details:', JSON.stringify(updateError, null, 2))
+      return { error: `Erreur lors de la mise à jour du logo: ${updateError.message}` }
+    }
+
+    if (!updateData || updateData.length === 0) {
+      console.error('No data returned from update')
+      return { error: 'Aucune donnée retournée après la mise à jour' }
+    }
+
+    const updatedRestaurant = updateData[0] as { id: string; logo_url: string | null }
+    console.log('Restaurant updated successfully:', updatedRestaurant)
+    console.log('New logo_url value:', updatedRestaurant.logo_url)
+    
+    if (updatedRestaurant.logo_url !== publicUrl) {
+      console.error('Logo URL mismatch! Expected:', publicUrl, 'Got:', updatedRestaurant.logo_url)
+      return { error: 'La mise à jour n\'a pas fonctionné correctement' }
     }
 
     revalidatePath('/dashboard/settings')
