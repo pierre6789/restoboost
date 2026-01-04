@@ -102,8 +102,7 @@ export function LandingCTA() {
             <Button
               asChild
               size="lg"
-              variant="outline"
-              className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto border-2 border-white/30 hover:bg-white/10 backdrop-blur-sm text-white hover:text-white w-full sm:w-auto"
+              className="bg-white text-[#FF6B35] hover:bg-gray-100 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto shadow-2xl hover:shadow-white/50 transition-all w-full sm:w-auto"
             >
               <Link href="/pricing">Voir les tarifs</Link>
             </Button>
