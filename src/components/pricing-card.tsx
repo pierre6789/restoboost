@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Check, CheckCircle2 } from 'lucide-react'
+import { Check, CheckCircle2, X } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
@@ -107,12 +107,19 @@ export function PricingCard({
       </CardHeader>
       <CardContent>
         <ul className="space-y-3 mb-6">
-          {plan.features.map((feature, index) => (
-            <li key={index} className="flex items-start">
-              <Check className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-              <span className="text-gray-700">{feature}</span>
-            </li>
-          ))}
+          {plan.features.map((feature, index) => {
+            const isNegative = feature.toLowerCase().startsWith('pas de') || feature.toLowerCase().startsWith('pas d\'')
+            return (
+              <li key={index} className="flex items-start">
+                {isNegative ? (
+                  <X className="h-5 w-5 text-red-500 mr-2 flex-shrink-0 mt-0.5" />
+                ) : (
+                  <Check className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
+                )}
+                <span className="text-gray-700">{feature}</span>
+              </li>
+            )
+          })}
         </ul>
 
         {isCurrentPlan ? (
