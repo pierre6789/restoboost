@@ -101,25 +101,44 @@ export function PricingCard({
         <CardTitle className="text-3xl font-bold text-[#2C2C2C]">{plan.name}</CardTitle>
         <CardDescription className="text-base mt-2">{plan.description}</CardDescription>
         <div className="mt-6">
-          <span className="text-5xl font-bold text-[#2C2C2C]">{plan.price}€</span>
-          <span className="text-gray-600 ml-2 text-lg">/{plan.period}</span>
+          <div className="flex items-baseline gap-2">
+            <span className="text-5xl font-bold text-[#2C2C2C] inline-block min-w-[120px]">{plan.price}€</span>
+            <span className="text-gray-600 text-lg whitespace-nowrap">/{plan.period}</span>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
         <ul className="space-y-3 mb-6">
-          {plan.features.map((feature, index) => {
-            const isNegative = feature.toLowerCase().startsWith('pas de') || feature.toLowerCase().startsWith('pas d\'')
-            return (
-              <li key={index} className="flex items-start">
-                {isNegative ? (
-                  <X className="h-5 w-5 text-red-500 mr-2 flex-shrink-0 mt-0.5" />
-                ) : (
+          {(() => {
+            // Séparer les features positives et négatives
+            const positiveFeatures: string[] = []
+            const negativeFeatures: string[] = []
+            
+            plan.features.forEach((feature) => {
+              const isNegative = feature.toLowerCase().startsWith('pas de') || feature.toLowerCase().startsWith('pas d\'')
+              if (isNegative) {
+                negativeFeatures.push(feature)
+              } else {
+                positiveFeatures.push(feature)
+              }
+            })
+            
+            // Afficher d'abord les positives, puis les négatives
+            return [
+              ...positiveFeatures.map((feature, index) => (
+                <li key={`positive-${index}`} className="flex items-start">
                   <Check className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                )}
-                <span className="text-gray-700">{feature}</span>
-              </li>
-            )
-          })}
+                  <span className="text-gray-700">{feature}</span>
+                </li>
+              )),
+              ...negativeFeatures.map((feature, index) => (
+                <li key={`negative-${index}`} className="flex items-start">
+                  <X className="h-5 w-5 text-red-500 mr-2 flex-shrink-0 mt-0.5" />
+                  <span className="text-gray-700">{feature}</span>
+                </li>
+              )),
+            ]
+          })()}
         </ul>
 
         {isCurrentPlan ? (

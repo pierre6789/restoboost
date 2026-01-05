@@ -151,6 +151,14 @@ export default async function BillingPage({
                     Votre abonnement est actif. Vous avez accès à toutes les
                     fonctionnalités premium.
                   </p>
+                  <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-sm text-blue-900 font-medium mb-1">
+                      📅 Abonnement actif
+                    </p>
+                    <p className="text-xs text-blue-700">
+                      Votre abonnement se renouvelle automatiquement. Vous pouvez gérer votre abonnement et voir les détails de facturation dans le portail Stripe.
+                    </p>
+                  </div>
                   <div className="flex gap-4">
                     <Button variant="outline" asChild>
                       <Link href="/pricing">Changer de plan</Link>
